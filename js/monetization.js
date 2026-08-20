@@ -12,8 +12,8 @@ const PAYMENT_CONFIG = {
   provider: "afdian", // 或 "mianbaoduo"
   // TODO: 把你在爱发电上架商品后拿到的购买链接粘进来（替换下面占位）
   links: {
-    single: "https://afdian.com/item/REPLACE_WITH_SINGLE", // ¥19.9 单份解锁码
-    bundle: "https://afdian.com/item/REPLACE_WITH_BUNDLE", // ¥39 包3类
+    single: "https://ifdian.net/item/daebbf309c5a11f1b63b52540025c377", // ¥19.9 单份解锁码
+    bundle: "https://ifdian.net/item/f83e2c889c5c11f1a0d25254001e7c00", // ¥39 包3类
   },
   // 爱发电“自动发货 - 固定码”里设置的码，要和这里完全一致（大小写不敏感）
   codes: {
