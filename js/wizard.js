@@ -224,7 +224,7 @@ export function renderResult() {
     ${doc.badge ? `<div class="res-badge">${doc.badge}</div>` : ""}
     <div class="res-sub">以下内容仅供参考，请核对所有信息后使用</div>
     ${unlocked ? "" : '<div class="preview-badge">预览版 · 输出将带尾注</div>'}
-    <pre class="doc-page">${escapeHtml(text)}</pre>
+    <pre class="doc-page${unlocked ? "" : " no-copy"}">${escapeHtml(text)}</pre>
     ${unlocked ? "" : `<div class="brand-mark">本文书由「家事文书」生成 · 仅供参考 · 非律师意见\n解锁正式版可导出无水印版本</div>`}
     <div class="disclaimer">${DOC_META.disclaimer}</div>
     ${guideHtml ? `<div class="block-sec"><h4>📝 填写指南</h4><ul class="guide">${guideHtml}</ul></div>` : ""}
@@ -260,7 +260,8 @@ function handleCopy(text, brandMark) {
         btn.textContent = "已复制 ✓";
       } else {
         btn.textContent = "已复制（含尾注）";
-        Monetization.triggerPaywall(() => renderResult());
+        // 解锁后由全局事件「lawdoc:unlocked」统一重渲染（去尾注 + 解除复制限制）
+        Monetization.triggerPaywall();
       }
       setTimeout(() => (btn.textContent = "复制全文"), 1500);
     },
@@ -276,5 +277,35 @@ function handlePrint(unlocked) {
   }
   Monetization.triggerPaywall(function () {
     window.print();
+  });
+}
+
+// ---------- 复制保护：免费版禁止手动选中复制正文 ----------
+// 仅拦截正文区（.doc-page），填写指南 / 风险提示等参考内容仍可正常复制。
+function guardCopy(e) {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  let node = sel.anchorNode;
+  while (node && node !== document.body) {
+    if (node.classList && node.classList.contains("no-copy")) {
+      e.preventDefault();
+      Monetization.showToast("🔒 请解锁正式版后复制");
+      return;
+    }
+    node = node.parentNode;
+  }
+}
+function guardContext(e) {
+  const t = e.target;
+  if (t && t.nodeType === 1 && t.closest && t.closest(".doc-page.no-copy")) {
+    e.preventDefault();
+  }
+}
+if (typeof window !== "undefined") {
+  document.addEventListener("copy", guardCopy);
+  document.addEventListener("contextmenu", guardContext);
+  // 解锁成功后刷新结果页：去掉水印尾注 + 解除复制限制
+  window.addEventListener("lawdoc:unlocked", () => {
+    if (!resultEl().classList.contains("hidden")) renderResult();
   });
 }

@@ -141,6 +141,11 @@ function ensureModal() {
       hideModal();
       showToast("🎉 解锁成功！已为你去除水印");
       track("unlock");
+      // 先通知 UI 刷新（去掉水印 / 解除复制限制），再执行排队的回调（如打印），
+      // 这样打印拿到的是去水印后的 DOM
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("lawdoc:unlocked"));
+      }
       firePending();  // 解锁成功 → 执行先前未触发的操作（如打印）
     } else {
       showToast("❌ 解锁码无效，请检查是否复制完整");
