@@ -1,16 +1,19 @@
 // 轻量合规访问统计。
-// 双通道：Vercel Web Analytics（部署在 vercel.app 时自动注入，无需配置）+ GoatCounter 漏斗（可选）。
+// 主通道：Vercel Web Analytics（在 Vercel 托管的任意域名下启用，含自定义域名与 *.vercel.app）。
+// 副通道：GoatCounter 漏斗（可选，配置 GC_CODE 后启用）。
 // 漏斗事件：view_home / open_<doc> / generate / paywall_show / unlock
-// 未配置 GC_CODE 时不加载 GoatCounter，页面照常运行；本地 file:// 不加载任何统计，不报错。
-// 私密性：仅统计“事件名 + 渠道(src)”，不收集任何填写内容。
-const GC_CODE = "REPLACE_WITH_GC_CODE"; // ← 替换为你的 GoatCounter 码（goatcounter.com 免费注册）
+// 私密性：仅统计“事件名 + 渠道(src)”，不收集任何填写内容。本地 file:// 不加载统计，不报错。
+const GC_CODE = "REPLACE_WITH_GC_CODE"; // ← 可选：填 GoatCounter 码启用漏斗；留空则只用 Vercel Analytics
 let gcEnabled = false;
 
-// Vercel Web Analytics：只在 vercel.app 域名下注入，本地/私链/其他静态托管不加载（避免 file:// 404 与误报）
+// Vercel Web Analytics 注入：任何 http(s) 页面都注入（含自定义域名 legal.ishuchen.com）。
+// 仅跳过 file://，避免本地双击打开时报 404。
 function initVercelAnalytics() {
   try {
-    const host = location.hostname || "";
-    if (!host.endsWith("vercel.app")) return;
+    if (location.protocol === "file:") return;
+    if (typeof window.va === "function") return; // 已注入则跳过
+    // 官方静态站片段：先建事件队列，再加载脚本，避免脚本就绪前事件丢失
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     const s = document.createElement("script");
     s.defer = true;
     s.src = "/_vercel/insights/script.js";
@@ -32,6 +35,13 @@ export function initAnalytics() {
 }
 
 export function track(name) {
+  // Vercel Web Analytics 自定义事件（漏斗）
+  try {
+    if (typeof window.va === "function") window.va("event", { name });
+  } catch (e) {
+    /* swallow */
+  }
+  // GoatCounter 漏斗（可选副通道）
   if (!gcEnabled || typeof window.goatcounter !== "object") return;
   const src = new URLSearchParams(location.search).get("src") || "direct";
   try {
