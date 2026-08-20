@@ -1,0 +1,14 @@
+# Vercel
+.vercel
+
+# Node
+node_modules/
+npm-debug.log*
+
+# 本地备份/部署残留
+_deploy_staging/
+_backup_flat/
+
+# OS
+.DS_Store
+Thumbs.db

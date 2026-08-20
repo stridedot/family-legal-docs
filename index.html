@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>家事文书 · 对话式协议生成器</title>
+  <meta name="description" content="回答几个问题，出一份填好关键信息的家庭协议 + 怎么填的指南 + 易踩雷提示。不是干巴巴模板。" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Vercel Web Analytics 由 js/analytics.js 在 vercel.app 域名下自动注入 -->
+</head>
+<body>
+  <header class="app-head">
+    <h1>家事文书</h1>
+    <p class="tag">回答几个问题，生成填好关键信息的协议，附填写指南与踩雷提示</p>
+    <div class="trust-line">🔒 信息只填在你设备上，不上传、不保存</div>
+  </header>
+
+  <main class="app-main">
+    <section id="home" class="view"></section>
+    <section id="wizard" class="view hidden"></section>
+    <section id="result" class="view hidden"></section>
+  </main>
+
+  <footer class="app-foot">
+    生成内容仅供参考，非律师意见 · 重大事项请线下咨询执业律师
+    <a href="privacy.html" class="linkbtn">隐私政策</a>
+    <button id="clearData" class="linkbtn">清除本机数据</button>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

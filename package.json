@@ -1,0 +1,10 @@
+{
+  "name": "jiashi-wenshu",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "对话式家庭法律文书生成器（纯前端，零构建）",
+  "scripts": {
+    "test": "node --test"
+  }
+}
